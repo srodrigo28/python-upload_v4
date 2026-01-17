@@ -343,7 +343,7 @@ class DeployWizard:
         page = ctk.CTkFrame(self.pages_container)
         ctk.CTkLabel(page, text="📤 Upload de Arquivos", font=("Segoe UI", 16, "bold"), text_color="#8B5CF6").pack(pady=(0, 16))
 
-        desc = ctk.CTkLabel(page, text="Os arquivos serão enviados para o servidor via PSCP", font=("Segoe UI", 10))
+        desc = ctk.CTkLabel(page, text="Os arquivos serão enviados para o servidor via SFTP", font=("Segoe UI", 10))
         desc.pack(pady=8)
 
         info_frame = ctk.CTkFrame(page)

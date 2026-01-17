@@ -16,64 +16,52 @@ class DeployManager:
         self.sftp_client = None
         
     def upload_files(self, data):
-        """Upload de arquivos via PSCP"""
+        """Upload de arquivos via SFTP (Paramiko) - Independente de binários externos"""
         try:
             local_path = data['local_path']
-            host = data['host']
-            port = data['port']
-            username = data['username']
-            password = data['password']
-            remote_path = data['remote_path']
+            remote_path = data['remote_path'].rstrip('/')
             
-            # Verificar se PSCP existe
-            pscp_paths = [
-                'pscp',
-                r'C:\Program Files\PuTTY\pscp.exe',
-                r'C:\Program Files (x86)\PuTTY\pscp.exe'
-            ]
+            # Conectar SSH
+            success, msg = self.connect_ssh(data)
+            if not success:
+                return False, f"Erro de conexão SSH: {msg}"
             
-            pscp_cmd = None
-            for path in pscp_paths:
-                try:
-                    result = subprocess.run([path, '--version'], capture_output=True, timeout=2)
-                    pscp_cmd = path
-                    break
-                except:
+            # Abrir SFTP
+            sftp = self.ssh_client.open_sftp()
+            
+            # Listar todos os arquivos locais
+            files_to_upload = []
+            for root, dirs, files in os.walk(local_path):
+                # Ignorar pastas indesejadas como .git, node_modules etc
+                if any(x in root for x in ['.git', '__pycache__', 'node_modules']):
                     continue
+                    
+                for file in files:
+                    local_file = os.path.join(root, file)
+                    relative_path = os.path.relpath(local_file, local_path)
+                    remote_file = os.path.join(remote_path, relative_path).replace('\\', '/')
+                    files_to_upload.append((local_file, remote_file))
             
-            if not pscp_cmd:
-                return False, "PSCP não encontrado. Instale o PuTTY e adicione ao PATH do Windows."
+            if not files_to_upload:
+                return False, "Nenhum arquivo encontrado para upload."
+
+            total = len(files_to_upload)
+            count = 0
             
-            # Construir comando PSCP
-            cmd = [
-                pscp_cmd,
-                '-r',
-                '-P', port,
-                '-pw', password,
-                f"{local_path}\\*",
-                f"{username}@{host}:{remote_path}"
-            ]
-            
-            # Executar comando
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=300  # 5 minutos timeout
-            )
-            
-            if result.returncode == 0:
-                return True, "Upload concluído com sucesso"
-            else:
-                error_msg = result.stderr or result.stdout or "Erro desconhecido no upload"
-                return False, error_msg
+            for local_file, remote_file in files_to_upload:
+                # Criar diretórios remotos se necessário
+                remote_dir = os.path.dirname(remote_file)
+                self._create_remote_dir(sftp, remote_dir)
                 
-        except subprocess.TimeoutExpired:
-            return False, "Timeout: Upload demorou muito tempo"
-        except FileNotFoundError:
-            return False, "PSCP não encontrado. Instale o PuTTY e adicione ao PATH"
+                # Upload do arquivo
+                sftp.put(local_file, remote_file)
+                count += 1
+            
+            sftp.close()
+            return True, f"Upload concluído com sucesso! {count} arquivos enviados via SFTP."
+                
         except Exception as e:
-            return False, f"Erro: {str(e)}"
+            return False, f"Erro no upload SFTP: {str(e)}"
     
     def connect_ssh(self, data):
         """Conectar via SSH usando Paramiko"""
