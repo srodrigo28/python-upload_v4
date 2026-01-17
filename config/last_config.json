@@ -1,0 +1,14 @@
+{
+    "local_path": "C:\\xampp\\htdocs\\www\\v2",
+    "backup_local_path": "C:\\backups\\deploy_wizard",
+    "host": "77.37.126.7",
+    "port": "22",
+    "username": "srodrigo",
+    "password": "",
+    "remote_path": "/var/www/adv.precifex.com/",
+    "db_name": "adv",
+    "db_user": "srodrigo",
+    "db_pass": "@dV#sRnAt98!",
+    "sql_file": "scripts/criar_new_db.sql",
+    "last_saved": "2026-01-12T22:22:31.663968"
+}

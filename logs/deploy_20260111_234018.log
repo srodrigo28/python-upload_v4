@@ -1,0 +1,17 @@
+=== Deploy Log - 2026-01-11 23:40:18 ===
+
+=== Iniciando Import SQL ===
+Timestamp: 2026-01-11 23:40:17
+Database: adv
+SQL File: /var/www/adv.precifex.com/scripts/criar_new_db.sql
+
+✅ Arquivo SQL encontrado
+
+Executando comando:
+mysql --no-defaults -u srodrigo -p*** adv < /var/www/adv.precifex.com/scripts/criar_new_db.sql
+
+=== STDERR ===
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+
+✅ Import SQL concluído com sucesso!

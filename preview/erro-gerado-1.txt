@@ -1,0 +1,13 @@
+Timestamp: 2026-01-11 23:36:23
+Database: adv
+SQL File: /var/www/adv.precifex.com/scripts/criar_new_db.sql
+
+✅ Arquivo SQL encontrado
+
+Executando comando:
+mysql -u srodrigo -p*** adv < /var/www/adv.precifex.com/scripts/criar_new_db.sql
+
+=== STDERR ===
+mysql: [ERROR] Found option without preceding group in config file /etc/mysql/mysql.conf.d/mysqld.cnf at line 1.
+mysql: [ERROR] Stopped processing the 'includedir' directive in file /etc/mysql/my.cnf at line 21.
+mysql: [Warning] Using a password on the command line interface can be insecure.

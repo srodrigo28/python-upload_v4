@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Curso: Deploy Wizard — Manual de Funções</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #0f172a; color: #e6eef8; }
+    .card { background: rgba(17,24,39,0.6); border: 1px solid rgba(99,102,241,0.12); }
+    .chev { transition: transform .18s ease; }
+    .chev.open { transform: rotate(90deg); }
+    .code { background: rgba(2,6,23,0.6); padding: 1rem; border-radius: 0.5rem; overflow:auto; }
+    .step-badge { min-width:2rem; text-align:center }
+  </style>
+</head>
+<body class="antialiased font-sans">
+  <main class="max-w-6xl mx-auto p-6">
+    <header class="mb-6">
+      <h1 class="text-4xl font-bold text-violet-300">Curso: Deploy Wizard — Treinamento e Manual de Funções</h1>
+      <p class="text-slate-300 mt-1">Guia passo-a-passo para entender, testar e estender o app. Cada função documentada com estados, uso e dicas.</p>
+    </header>
+
+    <section class="card rounded-xl p-6 mb-6">
+      <h2 class="text-2xl font-semibold text-indigo-200">Como usar este material</h2>
+      <ol class="mt-3 list-decimal list-inside text-slate-300 space-y-2">
+        <li>Abra cada tópico (clique na linha) para ver descrição, estados e exemplos de uso.</li>
+        <li>Os passos numerados mostram sequência típica para testes e desenvolvimento.</li>
+        <li>Use os exemplos de código para testar no REPL ou no próprio projeto.</li>
+      </ol>
+    </section>
+
+    <!-- Resumo de Contadores -->
+    <section class="card rounded-xl p-6 mb-6">
+      <h2 class="text-2xl font-semibold text-rose-200">Resumo de Contadores e Checklist Rápido</h2>
+      <p class="text-slate-300 mt-2">Visão rápida dos contadores, dependências e telas essenciais para desenvolvimento e testes.</p>
+
+      <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="p-4 rounded-lg bg-gradient-to-br from-violet-800 to-violet-700">
+          <div class="text-sm text-slate-300">Uploads concluídos</div>
+          <div class="text-3xl font-bold text-white mt-2" id="counter-uploads">0</div>
+          <div class="text-xs text-slate-300 mt-1">Contador de arquivos enviados com sucesso</div>
+        </div>
+
+        <div class="p-4 rounded-lg bg-gradient-to-br from-rose-800 to-rose-700">
+          <div class="text-sm text-slate-300">Falhas / Erros</div>
+          <div class="text-3xl font-bold text-white mt-2" id="counter-errors">0</div>
+          <div class="text-xs text-slate-300 mt-1">Tentativas que terminaram em erro</div>
+        </div>
+
+        <div class="p-4 rounded-lg bg-gradient-to-br from-sky-800 to-sky-700">
+          <div class="text-sm text-slate-300">Tarefas em andamento</div>
+          <div class="text-3xl font-bold text-white mt-2" id="counter-active">0</div>
+          <div class="text-xs text-slate-300 mt-1">Threads / operações assíncronas ativas</div>
+        </div>
+
+        <div class="p-4 rounded-lg bg-gradient-to-br from-emerald-800 to-emerald-700">
+          <div class="text-sm text-slate-300">Tempo decorrido</div>
+          <div class="text-3xl font-bold text-white mt-2" id="counter-time">00:00</div>
+          <div class="text-xs text-slate-300 mt-1">Cronômetro da operação atual</div>
+        </div>
+      </div>
+
+      <div class="mt-6 grid md:grid-cols-2 gap-4">
+        <div class="p-4 border rounded bg-slate-900">
+          <h4 class="text-indigo-200 font-semibold">Dependências essenciais</h4>
+          <ul class="text-slate-300 mt-2 list-disc ml-5 text-sm">
+            <li>customtkinter — interface moderna</li>
+            <li>requests — para upload/download HTTP</li>
+            <li>paramiko (opcional) — SFTP/SSH</li>
+            <li>tqdm (opcional) — progresso em CLI</li>
+          </ul>
+          <div class="mt-3 text-slate-300 text-sm">Instalar com:</div>
+          <pre class="code text-sm mt-2">.venv\Scripts\python.exe -m pip install -r requirements.txt</pre>
+        </div>
+
+        <div class="p-4 border rounded bg-slate-900">
+          <h4 class="text-indigo-200 font-semibold">Telas / Views essenciais</h4>
+          <ul class="text-slate-300 mt-2 list-disc ml-5 text-sm">
+            <li>Configuração / Settings — paths, host, credenciais</li>
+            <li>Backup — seleção de arquivos e execução</li>
+            <li>Upload — monitoramento de progresso e logs</li>
+            <li>Verificação / Remote Files — listar e validar remoto</li>
+            <li>Import SQL — executar e verificar logs da importação</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-6 p-4 border rounded bg-slate-900">
+        <h4 class="text-indigo-200 font-semibold">Funções chaves e contadores recomendados</h4>
+        <ul class="text-slate-300 mt-2 list-disc ml-5 text-sm">
+          <li><strong>safe_after(ms, func)</strong> — evita callbacks após fechamento.</li>
+          <li><strong>_start_progress(widget) / _stop_progress(widget)</strong> — gerenciam loops de UI.</li>
+          <li><strong>on_closing()</strong> — sinaliza encerramento, pausa tasks e fecha conexões.</li>
+          <li><strong>deploy_manager.close()</strong> — encerra conexões e threads do manager.</li>
+          <li><strong>Contadores extras sugeridos:</strong> retries, bytes_transferred, last_error_code.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card rounded-xl p-6 mb-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl text-rose-200 font-semibold">Índice do Curso</h2>
+        <div>
+          <button id="expand-all" class="px-3 py-1 text-sm bg-violet-600 rounded mr-2">Abrir tudo</button>
+          <button id="collapse-all" class="px-3 py-1 text-sm bg-slate-700 rounded">Fechar tudo</button>
+        </div>
+      </div>
+      <ol class="mt-4 space-y-2 text-slate-200">
+        <li><a href="#funcs" class="text-indigo-200 font-medium">1 — Funções principais do `main.py` (DeployWizard)</a></li>
+        <li><a href="#flow" class="text-indigo-200 font-medium">2 — Fluxo: passos do wizard e estados</a></li>
+        <li><a href="#folders" class="text-indigo-200 font-medium">3 — Resumo das pastas do projeto</a></li>
+        <li><a href="#howto" class="text-indigo-200 font-medium">4 — Laboratório: testar cada função</a></li>
+      </ol>
+    </section>
+
+    <!-- Functions -->
+    <section id="funcs" class="card rounded-xl p-6 mb-6">
+      <h3 class="text-xl font-semibold text-violet-200 mb-3">1 — Funções principais (por tópico)</h3>
+
+      <!-- Example function block: numbered and collapsible -->
+      <div class="space-y-3">
+        <!-- safe_after -->
+        <div class="border border-violet-600/20 rounded-lg overflow-hidden">
+          <button class="w-full flex items-center p-4 justify-between" data-toggle="safe_after">
+            <div class="flex items-center gap-3">
+              <span class="bg-violet-600 text-white rounded-full step-badge">1</span>
+              <div>
+                <div class="font-semibold text-violet-100">safe_after(ms, func)</div>
+                <div class="text-sm text-slate-300">Agendamento seguro que verifica se a aplicação não está em encerramento antes de usar <code>root.after</code>.</div>
+              </div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#c7b3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div id="safe_after" class="px-6 pb-4 hidden">
+            <h4 class="font-semibold text-slate-100 mt-2">Descrição</h4>
+            <p class="text-slate-300 text-sm mt-1">Evita exceções de callbacks após a janela ter sido destruída. Internamente verifica atributo <code>self._closing</code>.</p>
+            <h5 class="mt-2 font-semibold text-slate-100">Estados</h5>
+            <ul class="text-sm text-slate-300 ml-4 list-disc">
+              <li><strong>Pronto:</strong> app inicializado, <code>_closing=False</code>.</li>
+              <li><strong>Ignorado:</strong> se <code>_closing=True</code>, a chamada é descartada.</li>
+              <li><strong>Falha:</strong> exceções internas são tratadas e silenciosamente ignoradas.</li>
+            </ul>
+            <h5 class="mt-2 font-semibold text-slate-100">Exemplo de uso</h5>
+            <pre class="code text-sm"><code>self.safe_after(80, step)
+# ou
+self.safe_after(0, lambda: self.on_upload_complete(success, msg))</code></pre>
+            <h5 class="mt-2 font-semibold text-slate-100">Dica</h5>
+            <p class="text-slate-300 text-sm">Use para todas as atualizações de UI disparadas por threads.</p>
+          </div>
+        </div>
+
+        <!-- _start_progress/_stop_progress -->
+        <div class="border border-violet-600/20 rounded-lg overflow-hidden">
+          <button class="w-full flex items-center p-4 justify-between" data-toggle="progress">
+            <div class="flex items-center gap-3">
+              <span class="bg-violet-600 text-white rounded-full step-badge">2</span>
+              <div>
+                <div class="font-semibold text-violet-100">_start_progress(widget) / _stop_progress(widget)</div>
+                <div class="text-sm text-slate-300">Controlam barras/progressos indeterminados e garantem parada no encerramento.</div>
+              </div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#c7b3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div id="progress" class="px-6 pb-4 hidden">
+            <p class="text-slate-300 text-sm">Gerenciam um mapa interno <code>self._progress_tasks</code> para iniciar/encerrar loops que atualizam a UI. São seguros contra fechamento.</p>
+            <h5 class="mt-2 font-semibold text-slate-100">Estados</h5>
+            <ul class="text-sm text-slate-300 ml-4 list-disc">
+              <li><strong>Ativo:</strong> loop chamando <code>widget.set()</code>.</li>
+              <li><strong>Parado:</strong> flag do mapa colocada em <code>False</code> e valor zerado.</li>
+            </ul>
+            <h5 class="mt-2 font-semibold text-slate-100">Exemplo</h5>
+            <pre class="code text-sm"><code>self._start_progress(self.upload_progress)
+# ...
+self._stop_progress(self.upload_progress)</code></pre>
+          </div>
+        </div>
+
+        <!-- on_closing / main -->
+        <div class="border border-violet-600/20 rounded-lg overflow-hidden">
+          <button class="w-full flex items-center p-4 justify-between" data-toggle="closing">
+            <div class="flex items-center gap-3">
+              <span class="bg-violet-600 text-white rounded-full step-badge">3</span>
+              <div>
+                <div class="font-semibold text-violet-100">on_closing() / main()</div>
+                <div class="text-sm text-slate-300">Sequência de encerramento: sinaliza fechamento, para tasks e destrói a janela de forma segura.</div>
+              </div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#c7b3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div id="closing" class="px-6 pb-4 hidden">
+            <p class="text-slate-300 text-sm">Define <code>self._closing=True</code>, para todas as entradas em <code>self._progress_tasks</code>, chama <code>deploy_manager.close()</code> e agenda <code>root.destroy()</code>.</p>
+            <h5 class="mt-2 font-semibold text-slate-100">Checklist de encerramento</h5>
+            <ol class="text-slate-300 ml-4 list-decimal">
+              <li>Sinalizar: <code>_closing=True</code></li>
+              <li>Parar progress loops (mapa de tasks)</li>
+              <li>Fechar conexões do deploy manager</li>
+              <li>Chamar <code>root.destroy()</code> com pequeno atraso</li>
+            </ol>
+            <h5 class="mt-2 font-semibold text-slate-100">Dica</h5>
+            <p class="text-slate-300 text-sm">Se adicionar novos loops/after, sempre verifique on_closing para encerrar corretamente.</p>
+          </div>
+        </div>
+
+        <!-- Navigation & pages -->
+        <div class="border border-violet-600/20 rounded-lg overflow-hidden">
+          <button class="w-full flex items-center p-4 justify-between" data-toggle="pages">
+            <div class="flex items-center gap-3">
+              <span class="bg-violet-600 text-white rounded-full step-badge">4</span>
+              <div>
+                <div class="font-semibold text-violet-100">show_page(), next_step(), previous_step()</div>
+                <div class="text-sm text-slate-300">Controle de navegação entre as páginas do wizard.</div>
+              </div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#c7b3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div id="pages" class="px-6 pb-4 hidden">
+            <p class="text-slate-300 text-sm">Funções que escondem/mostram frames e atualizam botões; verifique estados para habilitar/desabilitar botões enquanto operações assíncronas rodam.</p>
+            <h5 class="mt-2 font-semibold text-slate-100">Estado típico</h5>
+            <ul class="text-slate-300 ml-4 list-disc text-sm">
+              <li><strong>Idle:</strong> página visível, botões habilitados.</li>
+              <li><strong>Operando:</strong> botões desabilitados até completar.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Flow (cards) -->
+    <section id="flow" class="card rounded-xl p-6 mb-6">
+      <h3 class="text-xl font-semibold text-violet-200 mb-3">2 — Fluxo do Wizard (sequência de estados)</h3>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+        <div class="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+          <div class="flex items-start gap-3">
+            <span class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold">1</span>
+            <div>
+              <h4 class="text-blue-300 font-semibold">Configuração (Página 1)</h4>
+              <p class="text-gray-300 text-sm mt-1">Preencha paths, host e credenciais. Função: <code>validate_config()</code>.</p>
+              <ul class="text-slate-300 text-sm mt-2 ml-4 list-disc">
+                <li>Verifique formatos de path</li>
+                <li>Salve config com <code>Salvar Config</code></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-emerald-900/20 border border-emerald-500/30 rounded-lg p-4">
+          <div class="flex items-start gap-3">
+            <span class="bg-emerald-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold">2</span>
+            <div>
+              <h4 class="text-emerald-200 font-semibold">Backup (Página 2)</h4>
+              <p class="text-gray-300 text-sm mt-1">Inicia threads para backup de arquivos e DB. Use <code>execute_backup_files</code> e <code>execute_backup_database</code>.</p>
+              <p class="text-slate-300 text-sm mt-2">Dica: teste o backup em ambiente local antes de produção.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-sky-900/20 border border-sky-500/30 rounded-lg p-4">
+          <div class="flex items-start gap-3">
+            <span class="bg-sky-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold">3</span>
+            <div>
+              <h4 class="text-sky-300 font-semibold">Upload (Página 3)</h4>
+              <p class="text-gray-300 text-sm mt-1">Executa <code>execute_upload_async()</code> em thread; atualiza progress com <code>_start_progress</code>.</p>
+              <p class="text-slate-300 text-sm mt-2">Monitore: <em>upload_progress</em> e logs para retrys.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-cyan-900/20 border border-cyan-500/30 rounded-lg p-4">
+          <div class="flex items-start gap-3">
+            <span class="bg-cyan-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold">4</span>
+            <div>
+              <h4 class="text-cyan-300 font-semibold">Verificação (Página 4)</h4>
+              <p class="text-gray-300 text-sm mt-1">Lista arquivos remotos com <code>list_remote_files</code> e popula <code>files_text</code>.</p>
+              <p class="text-slate-300 text-sm mt-2">Confirme permissões e tamanhos antes de avançar.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-pink-900/20 border border-pink-500/30 rounded-lg p-4">
+          <div class="flex items-start gap-3">
+            <span class="bg-pink-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold">5</span>
+            <div>
+              <h4 class="text-pink-300 font-semibold">Import SQL (Página 5)</h4>
+              <p class="text-gray-300 text-sm mt-1">Chama <code>execute_import_async()</code> que usa <code>deploy_manager.import_sql()</code> e grava logs.</p>
+              <p class="text-slate-300 text-sm mt-2">Verifique privilégios MySQL e backup antes de importar.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folders -->
+    <section id="folders" class="card rounded-xl p-6 mb-6">
+      <h3 class="text-xl font-semibold text-violet-200 mb-3">3 — Resumo de Pastas</h3>
+      <div class="grid md:grid-cols-2 gap-4 text-slate-200">
+        <div class="p-4 border border-slate-700 rounded">
+          <h4 class="font-semibold text-indigo-200">`config/`</h4>
+          <p class="text-slate-300 text-sm mt-1">Contém o arquivo <code>last_config.json</code> com a última configuração salva pelo botão "Salvar Config".</p>
+        </div>
+        <div class="p-4 border border-slate-700 rounded">
+          <h4 class="font-semibold text-indigo-200">`logs/`</h4>
+          <p class="text-slate-300 text-sm mt-1">Armazena logs de cada deploy (<code>deploy_YYYYMMDD_HHMMSS.log</code>) — útil para auditoria e debugging.</p>
+        </div>
+        <div class="p-4 border border-slate-700 rounded">
+          <h4 class="font-semibold text-indigo-200">`assets/`</h4>
+          <p class="text-slate-300 text-sm mt-1">Ícones e recursos estáticos usados pela interface.</p>
+        </div>
+        <div class="p-4 border border-slate-700 rounded">
+          <h4 class="font-semibold text-indigo-200">Raiz do projeto</h4>
+          <p class="text-slate-300 text-sm mt-1">Contém <code>main.py</code>, <code>deploy.py</code>, <code>validators.py</code>, <code>config_manager.py</code> e <code>requirements.txt</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HowTo -->
+    <section id="howto" class="card rounded-xl p-6 mb-6">
+      <h3 class="text-xl font-semibold text-violet-200 mb-3">4 — Laboratório (passo-a-passo para testar funções)</h3>
+      <ol class="list-decimal list-inside space-y-3 text-slate-200">
+        <li>
+          <strong>Testar `safe_after` e `on_closing`</strong>
+          <ol class="list-decimal list-inside ml-6 text-slate-300">
+            <li>Abra o app e dispare uma thread que chama várias vezes `safe_after(100, ...)`.</li>
+            <li>Feche a janela rapidamente; verifique se não aparecem erros no console.</li>
+          </ol>
+        </li>
+        <li>
+          <strong>Testar upload com logs</strong>
+          <ol class="list-decimal list-inside ml-6 text-slate-300">
+            <li>Configure host falso (ou ambiente de teste) e execute `execute_upload_async()`.</li>
+            <li>Verifique `upload_log_text` para mensagens e `upload_progress` para comportamento.</li>
+          </ol>
+        </li>
+        <li>
+          <strong>Adicionar nova task segura</strong>
+          <p class="text-slate-300 text-sm ml-6">Ao adicionar um novo agendamento, sempre envolva em `safe_after` e garanta parada em `on_closing`.</p>
+        </li>
+      </ol>
+    </section>
+
+    <footer class="text-slate-400 text-sm mt-6">Gerado automaticamente — curso/manual criado para facilitar manutenção e treinamento.</footer>
+  </main>
+
+  <script>
+    // Collapsible toggles
+    document.querySelectorAll('[data-toggle]').forEach(btn => {
+      const id = btn.getAttribute('data-toggle');
+      const panel = document.getElementById(id);
+      const chev = btn.querySelector('.chev');
+      btn.addEventListener('click', () => {
+        const open = !panel.classList.contains('hidden');
+        if(open) {
+          panel.classList.add('hidden');
+          chev.classList.remove('open');
+        } else {
+          panel.classList.remove('hidden');
+          chev.classList.add('open');
+        }
+      });
+    });
+
+    document.getElementById('expand-all').addEventListener('click', ()=>{
+      document.querySelectorAll('[id]').forEach(el=>{
+        if(el.id && el.previousElementSibling && el.classList.contains('hidden')) el.classList.remove('hidden');
+      });
+      document.querySelectorAll('.chev').forEach(c=>c.classList.add('open'));
+    });
+    document.getElementById('collapse-all').addEventListener('click', ()=>{
+      document.querySelectorAll('[id]').forEach(el=>{
+        if(el.id && el.previousElementSibling && !el.classList.contains('hidden')) el.classList.add('hidden');
+      });
+      document.querySelectorAll('.chev').forEach(c=>c.classList.remove('open'));
+    });
+
+    // Copy buttons (delegation)
+    document.addEventListener('click', (e)=>{
+      const tgt = e.target.closest('.copy-btn');
+      if(!tgt) return;
+      const id = tgt.getAttribute('data-target');
+      const el = document.getElementById(id);
+      if(!el) return;
+      navigator.clipboard.writeText(el.innerText).then(()=>{
+        tgt.innerText = 'Copiado ✓';
+        setTimeout(()=> tgt.innerText = '📋 Copiar Comando', 1200);
+      });
+    });
+  </script>
+</body>
+</html>

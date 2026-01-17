@@ -1,0 +1,18 @@
+=== Deploy Log - 2026-01-13 01:15:33 ===
+
+=== Iniciando Import SQL ===
+Timestamp: 2026-01-13 01:15:32
+Database: adv
+SQL File: /var/www/adv.precifex.com/scripts/criar_new_db.sql
+
+✅ Arquivo SQL encontrado
+
+Executando comando:
+mysql --no-defaults -u srodrigo -p*** adv < /var/www/adv.precifex.com/scripts/criar_new_db.sql
+
+=== STDERR ===
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1064 (42000) at line 70: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'CONSTRAINT `despesas_ibfk_1` FOREIGN KEY (`processo_id`) REFERENCES `processos` ' at line 21
+
+
+❌ Import falhou com erros

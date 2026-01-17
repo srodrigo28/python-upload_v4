@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Deploy Wizard - Manual do Usuário</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .gradient-animate {
+      background-size: 200% 200%;
+      animation: gradient 15s ease infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { border-color: rgba(139, 92, 246, 0.3); }
+      50% { border-color: rgba(139, 92, 246, 0.8); }
+    }
+    .pulse-border {
+      animation: pulse-border 2s ease-in-out infinite;
+    }
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      overflow-x: auto;
+    }
+    .copy-btn {
+      transition: all 0.2s ease;
+    }
+    .copy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-gray-100 min-h-screen">
+  
+  <!-- Header -->
+  <header class="gradient-animate bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 py-12 shadow-2xl">
+    <div class="max-w-6xl mx-auto px-6">
+      <h1 class="text-5xl font-bold text-white mb-3">🚀 Deploy Wizard</h1>
+      <p class="text-violet-100 text-xl">Manual Completo do Usuário</p>
+      <p class="text-violet-200 text-sm mt-2">Automatize seu deploy em 3 passos simples</p>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto p-6 space-y-8">
+
+    <!-- Índice Rápido -->
+    <section class="bg-slate-800 rounded-xl shadow-2xl border border-violet-500/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-violet-600/20 to-purple-600/20 px-6 py-4 border-b border-violet-500/30">
+        <h2 class="text-2xl font-semibold text-violet-300">📑 Índice Rápido</h2>
+      </div>
+      <div class="p-6 grid md:grid-cols-2 gap-4">
+        <a href="#visao-geral" class="bg-slate-700/50 hover:bg-slate-700 p-4 rounded-lg transition-colors border border-slate-600">
+          <span class="text-violet-400 font-semibold">📋 Visão Geral</span>
+        </a>
+        <a href="#requisitos" class="bg-slate-700/50 hover:bg-slate-700 p-4 rounded-lg transition-colors border border-slate-600">
+          <span class="text-violet-400 font-semibold">📦 Requisitos</span>
+        </a>
+        <a href="#instalacao" class="bg-slate-700/50 hover:bg-slate-700 p-4 rounded-lg transition-colors border border-slate-600">
+          <span class="text-violet-400 font-semibold">🚀 Instalação</span>
+        </a>
+        <a href="#como-usar" class="bg-slate-700/50 hover:bg-slate-700 p-4 rounded-lg transition-colors border border-slate-600">
+          <span class="text-violet-400 font-semibold">📖 Como Usar</span>
+        </a>
+        <a href="#estrutura" class="bg-slate-700/50 hover:bg-slate-700 p-4 rounded-lg transition-colors border border-slate-600">
+          <span class="text-violet-400 font-semibold">📁 Estrutura</span>
+        </a>
+        <a href="#problemas" class="bg-slate-700/50 hover:bg-slate-700 p-4 rounded-lg transition-colors border border-slate-600">
+          <span class="text-violet-400 font-semibold">🐛 Problemas</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Resumo de Contadores (melhoria adicionada) -->
+    <section id="contadores" class="bg-slate-800 rounded-xl shadow-2xl border border-emerald-500/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-emerald-600/20 to-green-600/20 px-6 py-4 border-b border-emerald-500/30">
+        <h2 class="text-2xl font-bold text-emerald-300 flex items-center gap-3">
+          <span>📊</span> Resumo de Contadores
+        </h2>
+      </div>
+      <div class="p-6">
+        <p class="text-gray-300 text-sm mb-4">Contadores dinâmicos para monitorar operações durante testes e execução (atualize via script do app ou via console do navegador para desenvolvimento).</p>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="p-4 rounded-lg bg-gradient-to-br from-violet-800 to-violet-700">
+            <div class="text-sm text-slate-300">Uploads concluídos</div>
+            <div class="text-3xl font-bold text-white mt-2" id="counter-uploads">0</div>
+            <div class="text-xs text-slate-300 mt-1">Arquivos enviados com sucesso</div>
+          </div>
+
+          <div class="p-4 rounded-lg bg-gradient-to-br from-rose-800 to-rose-700">
+            <div class="text-sm text-slate-300">Falhas / Erros</div>
+            <div class="text-3xl font-bold text-white mt-2" id="counter-errors">0</div>
+            <div class="text-xs text-slate-300 mt-1">Operações terminadas em erro</div>
+          </div>
+
+          <div class="p-4 rounded-lg bg-gradient-to-br from-sky-800 to-sky-700">
+            <div class="text-sm text-slate-300">Tarefas em andamento</div>
+            <div class="text-3xl font-bold text-white mt-2" id="counter-active">0</div>
+            <div class="text-xs text-slate-300 mt-1">Threads / operações ativas</div>
+          </div>
+
+          <div class="p-4 rounded-lg bg-gradient-to-br from-emerald-800 to-emerald-700">
+            <div class="text-sm text-slate-300">Tempo decorrido</div>
+            <div class="text-3xl font-bold text-white mt-2" id="counter-time">00:00</div>
+            <div class="text-xs text-slate-300 mt-1">Cronômetro da operação atual</div>
+          </div>
+        </div>
+
+        <div class="mt-6 grid md:grid-cols-2 gap-4">
+          <div class="p-4 border rounded bg-slate-900">
+            <h4 class="text-indigo-200 font-semibold">Dependências rápidas</h4>
+            <p class="text-slate-300 text-sm mt-2">Instale via:</p>
+            <pre class="code-block text-sm mt-2">.venv\Scripts\python.exe -m pip install -r requirements.txt</pre>
+          </div>
+          <div class="p-4 border rounded bg-slate-900">
+            <h4 class="text-indigo-200 font-semibold">Contadores extras sugeridos</h4>
+            <ul class="text-slate-300 mt-2 list-disc ml-5 text-sm">
+              <li>retries — número de tentativas</li>
+              <li>bytes_transferred — total de bytes enviados</li>
+              <li>last_error_code — último código de erro</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visão Geral -->
+    <section id="visao-geral" class="bg-slate-800 rounded-xl shadow-2xl border border-violet-500/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 px-6 py-4 border-b border-blue-500/30">
+        <h2 class="text-2xl font-bold text-blue-300 flex items-center gap-3">
+          <span>📋</span> Visão Geral
+        </h2>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <p class="text-gray-300 text-lg">
+          O <strong class="text-blue-300">Deploy Wizard</strong> é uma ferramenta desktop que simplifica o processo de deploy de projetos PHP em servidores remotos.
+        </p>
+        
+        <div class="bg-blue-900/20 border border-blue-500/30 rounded-lg p-5">
+          <h3 class="text-blue-300 font-semibold mb-3 text-lg">🎯 Processo de Deploy em 3 Passos:</h3>
+          <div class="space-y-3">
+            <div class="flex items-start gap-3">
+              <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">1</span>
+              <div>
+                <strong class="text-blue-200">📤 Upload de Arquivos</strong>
+                <p class="text-gray-400 text-sm">Envia todos os arquivos do projeto via PSCP (PuTTY Secure Copy)</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">2</span>
+              <div>
+                <strong class="text-blue-200">🔍 Verificação</strong>
+                <p class="text-gray-400 text-sm">Lista e verifica os arquivos enviados no servidor remoto via SSH</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">3</span>
+              <div>
+                <strong class="text-blue-200">🗄️ Import SQL</strong>
+                <p class="text-gray-400 text-sm">Importa automaticamente o banco de dados MySQL no servidor</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4 mt-6">
+          <div class="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
+            <h4 class="text-green-300 font-semibold mb-2 flex items-center gap-2">
+              <span>✅</span> Características
+            </h4>
+            <ul class="space-y-1 text-sm text-gray-300">
+              <li>• Interface gráfica moderna</li>
+              <li>• Validação em tempo real</li>
+              <li>• Execução assíncrona</li>
+              <li>• Salvar/carregar configs</li>
+              <li>• Logs detalhados</li>
+              <li>• Tema dark moderno</li>
+            </ul>
+          </div>
+          <div class="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4">
+            <h4 class="text-purple-300 font-semibold mb-2 flex items-center gap-2">
+              <span>🔒</span> Segurança
+            </h4>
+            <ul class="space-y-1 text-sm text-gray-300">
+              <li>• Senhas não são salvas</li>
+              <li>• Conexões SSH criptografadas</li>
+              <li>• Logs sem informações sensíveis</li>
+              <li>• Validação de campos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Requisitos -->
+    <section id="requisitos" class="bg-slate-800 rounded-xl shadow-2xl border border-orange-500/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-orange-600/20 to-red-600/20 px-6 py-4 border-b border-orange-500/30">
+        <h2 class="text-2xl font-bold text-orange-300 flex items-center gap-3">
+          <span>📦</span> Requisitos
+        </h2>
+      </div>
+      
+      <div class="p-6 space-y-6">
+        <!-- Python -->
+        <div class="bg-orange-900/20 border border-orange-500/30 rounded-lg p-5">
+          <h3 class="text-orange-300 font-semibold mb-3 flex items-center gap-2">
+            <span>🐍</span> Python
+          </h3>
+          <div class="bg-black/40 p-3 rounded">
+            <code class="text-orange-200">Python 3.8 ou superior</code>
+          </div>
+        </div>
+
+        <!-- Dependências Python -->
+        <div class="bg-orange-900/20 border border-orange-500/30 rounded-lg p-5">
+          <h3 class="text-orange-300 font-semibold mb-3 flex items-center gap-2">
+            <span>📚</span> Dependências Python
+          </h3>
+          <pre class="code-block"><code class="text-orange-200 text-sm">ttkbootstrap==1.10.1
+paramiko==3.4.0
+Pillow==10.1.0</code></pre>
+        </div>
+
+        <!-- Ferramentas Externas -->
+        <div class="bg-orange-900/20 border border-orange-500/30 rounded-lg p-5">
+          <h3 class="text-orange-300 font-semibold mb-3 flex items-center gap-2">
+            <span>🔧</span> Ferramentas Externas
+          </h3>
+          <div class="space-y-3">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">📡</span>
+              <div>
+                <strong class="text-orange-200">PSCP (PuTTY Secure Copy)</strong>
+                <p class="text-gray-400 text-sm mt-1">Ferramenta para upload rápido de arquivos via SSH</p>
+                <a href="https://www.putty.org/" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm mt-1 inline-block">
+                  🔗 Download PuTTY
+                </a>
+                <div class="bg-amber-900/20 border border-amber-500/30 rounded p-3 mt-2">
+                  <p class="text-amber-300 text-xs font-semibold">💡 Importante:</p>
+                  <p class="text-gray-300 text-xs mt-1">Instale o PuTTY e adicione ao PATH do Windows, ou o programa detectará automaticamente em:</p>
+                  <code class="text-xs bg-black/40 px-2 py-1 rounded inline-block mt-1">C:\Program Files\PuTTY\pscp.exe</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Instalação -->
+    <section id="instalacao" class="bg-slate-800 rounded-xl shadow-2xl border-2 pulse-border overflow-hidden">
+      <div class="bg-gradient-to-r from-green-600/20 to-emerald-600/20 px-6 py-4 border-b border-green-500/30">
+        <h2 class="text-2xl font-bold text-green-300 flex items-center gap-3">
+          <span>🚀</span> Instalação
+        </h2>
+      </div>
+      
+      <div class="p-6 space-y-6">
+        <!-- Passo 1 -->
+        <div class="bg-green-900/20 border border-green-500/30 rounded-lg p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="bg-green-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">1</span>
+            <h3 class="text-green-300 font-semibold">Navegar até a pasta do projeto</h3>
+          </div>
+          <pre class="code-block"><code id="install-step1" class="text-green-200 text-sm">cd c:\xampp\htdocs\www\v2\juridico-php\0-python\tkinter\deploy_wizard</code></pre>
+          <button class="copy-btn bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg font-semibold mt-3 text-sm" data-target="install-step1">
+            📋 Copiar Comando
+          </button>
+        </div>
+
+        <!-- Passo 2 -->
+        <div class="bg-green-900/20 border border-green-500/30 rounded-lg p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="bg-green-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">2</span>
+            <h3 class="text-green-300 font-semibold">Instalar dependências Python</h3>
+          </div>
+          <pre class="code-block"><code id="install-step2" class="text-green-200 text-sm">pip install -r requirements.txt</code></pre>
+          <button class="copy-btn bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg font-semibold mt-3 text-sm" data-target="install-step2">
+            📋 Copiar Comando
+          </button>
+          <div class="bg-blue-900/20 border border-blue-500/30 rounded p-3 mt-3">
+            <p class="text-blue-300 text-xs font-semibold">💡 Dica:</p>
+            <p class="text-gray-300 text-xs mt-1">Este comando instalará: ttkbootstrap, paramiko e Pillow</p>
+          </div>
+        </div>
+
+        <!-- Passo 3 -->
+        <div class="bg-green-900/20 border border-green-500/30 rounded-lg p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="bg-green-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">3</span>
+            <h3 class="text-green-300 font-semibold">Executar o aplicativo</h3>
+          </div>
+          <pre class="code-block"><code id="install-step3" class="text-green-200 text-sm">python main.py</code></pre>
+          <button class="copy-btn bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg font-semibold mt-3 text-sm" data-target="install-step3">
+            📋 Copiar Comando
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Como Usar -->
+    <section id="como-usar" class="bg-slate-800 rounded-xl shadow-2xl border border-purple-500/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 px-6 py-4 border-b border-purple-500/30">
+        <h2 class="text-2xl font-bold text-purple-300 flex items-center gap-3">
+          <span>📖</span> Como Usar
+        </h2>
+      </div>
+      
+      <div class="p-6 space-y-6">
+        <!-- Primeira Vez -->
+        <div class="bg-purple-900/20 border border-purple-500/30 rounded-lg p-5">
+          <h3 class="text-purple-300 font-semibold mb-4 flex items-center gap-2">
+            <span>🆕</span> Primeira Vez
+          </h3>
+          <ol class="space-y-3">
+            <li class="flex items-start gap-3">
+              <span class="bg-purple-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">1</span>
+              <span class="text-gray-300">Configure todos os campos no Passo 1</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="bg-purple-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">2</span>
+              <span class="text-gray-300">Clique em <strong class="text-purple-200">"💾 Salvar Config"</strong> para não precisar digitar novamente</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="bg-purple-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">3</span>
+              <span class="text-gray-300">Execute o deploy clicando em <strong class="text-purple-200">"Próximo →"</strong></span>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Passo 1: Upload -->
+        <div class="bg-blue-900/20 border border-blue-500/30 rounded-lg p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold">1</span>
+            <h3 class="text-blue-300 font-semibold text-lg">📤 Configurar Upload</h3>
+          </div>
+          <div class="space-y-3">
+            <div class="bg-slate-800 p-3 rounded">
+              <div class="grid grid-cols-3 gap-2 text-sm">
+                <strong class="text-blue-200">Path Local:</strong>
+                <span class="col-span-2 text-gray-300">Pasta do seu projeto no computador</span>
+                
+                <strong class="text-blue-200">Host:</strong>
+                <span class="col-span-2 text-gray-300">IP ou hostname do servidor (ex: 77.37.126.7)</span>
+                
+                <strong class="text-blue-200">Port:</strong>
+                <span class="col-span-2 text-gray-300">Porta SSH (padrão: 22)</span>
+                
+                <strong class="text-blue-200">Username:</strong>
+                <span class="col-span-2 text-gray-300">Usuário SSH (ex: srodrigo)</span>
+                
+                <strong class="text-blue-200">Password:</strong>
+                <span class="col-span-2 text-gray-300">Senha do usuário SSH</span>
+                
+                <strong class="text-blue-200">Remote Path:</strong>
+                <span class="col-span-2 text-gray-300">Caminho no servidor (ex: /var/www/adv.precifex.com/)</span>
+              </div>
+            </div>
+            <div class="bg-green-900/20 border border-green-500/30 rounded p-3">
+              <p class="text-green-300 text-sm">✅ Após preencher, clique em <strong>"Próximo →"</strong> para iniciar o upload</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Passo 2: Verificação -->
+        <div class="bg-cyan-900/20 border border-cyan-500/30 rounded-lg p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="bg-cyan-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold">2</span>
+            <h3 class="text-cyan-300 font-semibold text-lg">🔍 Verificação Automática</h3>
+          </div>
+          <p class="text-gray-300 mb-3">Após o upload bem-sucedido, o wizard automaticamente:</p>
+          <ul class="space-y-2 text-gray-300 text-sm ml-5">
+            <li>• Conecta ao servidor via SSH</li>
+            <li>• Lista todos os arquivos enviados</li>
+            <li>• Mostra a quantidade total de arquivos</li>
+            <li>• Exibe permissões e tamanhos</li>
+          </ul>
+          <div class="bg-blue-900/20 border border-blue-500/30 rounded p-3 mt-3">
+            <p class="text-blue-300 text-sm">💡 Verifique se os arquivos importantes estão listados antes de continuar</p>
+          </div>
+        </div>
+
+        <!-- Passo 3: Import SQL -->
+        <div class="bg-pink-900/20 border border-pink-500/30 rounded-lg p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="bg-pink-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold">3</span>
+            <h3 class="text-pink-300 font-semibold text-lg">🗄️ Importar SQL</h3>
+          </div>
+          <div class="space-y-3">
+            <div class="bg-slate-800 p-3 rounded">
+              <div class="grid grid-cols-3 gap-2 text-sm">
+                <strong class="text-pink-200">Database:</strong>
+                <span class="col-span-2 text-gray-300">Nome do banco de dados (ex: adv)</span>
+                
+                <strong class="text-pink-200">SQL File:</strong>
+                <span class="col-span-2 text-gray-300">Caminho do SQL no servidor (ex: scripts/criar_new_db.sql)</span>
+              </div>
+            </div>
+            <div class="bg-green-900/20 border border-green-500/30 rounded p-3">
+              <p class="text-green-300 text-sm">🎉 Clique em <strong>"Finalizar"</strong> para importar o SQL e concluir o deploy!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Próximos Deploys -->
+        <div class="bg-green-900/20 border border-green-500/30 rounded-lg p-5">
+          <h3 class="text-green-300 font-semibold mb-4 flex items-center gap-2">
+            <span>🔄</span> Próximos Deploys (Mais Rápido)
+          </h3>
+          <ol class="space-y-3">
+            <li class="flex items-start gap-3">
+              <span class="bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">1</span>
+              <span class="text-gray-300">Abra o programa (configurações já carregadas automaticamente)</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">2</span>
+              <span class="text-gray-300">Digite apenas a senha (por segurança, não é salva)</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">3</span>
+              <span class="text-gray-300">Clique em <strong class="text-green-200">"Próximo →"</strong> e pronto!</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Estrutura do Projeto -->
+    <section id="estrutura" class="bg-slate-800 rounded-xl shadow-2xl border border-indigo-500/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-indigo-600/20 to-blue-600/20 px-6 py-4 border-b border-indigo-500/30">
+        <h2 class="text-2xl font-bold text-indigo-300 flex items-center gap-3">
+          <span>📁</span> Estrutura do Projeto
+        </h2>
+      </div>
+      
+      <div class="p-6">
+        <pre class="code-block text-sm text-indigo-200">deploy_wizard/
+│
+├── main.py                 <span class="text-gray-400"># Interface principal (Tkinter)</span>
+├── validators.py           <span class="text-gray-400"># Validação de campos</span>
+├── deploy.py              <span class="text-gray-400"># Lógica de deploy (PSCP, SSH, MySQL)</span>
+├── config_manager.py      <span class="text-gray-400"># Gerenciamento de configurações</span>
+├── requirements.txt       <span class="text-gray-400"># Dependências Python</span>
+├── README.md              <span class="text-gray-400"># Documentação em Markdown</span>
+├── manual.html            <span class="text-gray-400"># Este manual</span>
+│
+├── config/
+│   └── last_config.json   <span class="text-gray-400"># Última configuração salva</span>
+│
+├── logs/
+│   └── deploy_*.log       <span class="text-gray-400"># Logs de cada deploy</span>
+│
+└── assets/
+    └── (ícones e recursos)</pre>
+
+        <div class="mt-6 space-y-3">
+          <div class="bg-indigo-900/20 border border-indigo-500/30 rounded-lg p-4">
+            <h4 class="text-indigo-300 font-semibold mb-2">📄 Arquivos Principais</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-start gap-2">
+                <span class="text-indigo-400">•</span>
+                <div>
+                  <strong class="text-indigo-200">main.py</strong>
+                  <span class="text-gray-400 ml-2">Interface gráfica com wizard de 3 páginas (645 linhas)</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="text-indigo-400">•</span>
+                <div>
+                  <strong class="text-indigo-200">deploy.py</strong>
+                  <span class="text-gray-400 ml-2">Upload PSCP, SSH, listagem e import SQL (352 linhas)</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="text-indigo-400">•</span>
+                <div>
+                  <strong class="text-indigo-200">validators.py</strong>
+                  <span class="text-gray-400 ml-2">Validação de IP, porta, paths, etc (68 linhas)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4">
+            <h4 class="text-purple-300 font-semibold mb-2">📊 Logs</h4>
+            <p class="text-gray-300 text-sm">Todos os deploys geram logs automáticos em:</p>
+            <code class="bg-black/40 px-3 py-1 rounded inline-block text-purple-200 text-xs mt-2">logs/deploy_YYYYMMDD_HHMMSS.log</code>
+            <p class="text-gray-400 text-xs mt-2">Útil para debug, auditoria e histórico de operações</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Solução de Problemas -->
+    <section id="problemas" class="bg-slate-800 rounded-xl shadow-2xl border border-red-500/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-red-600/20 to-orange-600/20 px-6 py-4 border-b border-red-500/30">
+        <h2 class="text-2xl font-bold text-red-300 flex items-center gap-3">
+          <span>🐛</span> Solução de Problemas
+        </h2>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <!-- Problema 1 -->
+        <details class="bg-red-900/20 border border-red-500/30 rounded-lg">
+          <summary class="cursor-pointer p-4 text-red-300 font-medium hover:text-red-200 transition-colors flex items-center gap-2">
+            <span>❌</span> PSCP não encontrado
+          </summary>
+          <div class="px-4 pb-4 space-y-3">
+            <div class="bg-slate-900/50 rounded p-3">
+              <p class="text-red-300 font-semibold mb-2">Erro:</p>
+              <code class="text-sm text-gray-300">PSCP não encontrado. Instale o PuTTY e adicione ao PATH</code>
+            </div>
+            <div class="bg-green-900/20 border border-green-500/30 rounded p-3">
+              <p class="text-green-300 font-semibold mb-2">Solução:</p>
+              <ol class="space-y-1 text-sm text-gray-300">
+                <li>1. Baixe o PuTTY: <a href="https://www.putty.org/" class="text-blue-400 hover:text-blue-300">putty.org</a></li>
+                <li>2. Instale no caminho padrão: <code class="bg-slate-800 px-2 py-1 rounded text-xs">C:\Program Files\PuTTY\</code></li>
+                <li>3. Ou adicione o PSCP ao PATH do Windows</li>
+                <li>4. Reinicie o Deploy Wizard</li>
+              </ol>
+            </div>
+          </div>
+        </details>
+
+        <!-- Problema 2 -->
+        <details class="bg-red-900/20 border border-red-500/30 rounded-lg">
+          <summary class="cursor-pointer p-4 text-red-300 font-medium hover:text-red-200 transition-colors flex items-center gap-2">
+            <span>🔐</span> Erro de autenticação SSH
+          </summary>
+          <div class="px-4 pb-4 space-y-3">
+            <div class="bg-slate-900/50 rounded p-3">
+              <p class="text-red-300 font-semibold mb-2">Erro:</p>
+              <code class="text-sm text-gray-300">Erro de autenticação: usuário ou senha incorretos</code>
+            </div>
+            <div class="bg-green-900/20 border border-green-500/30 rounded p-3">
+              <p class="text-green-300 font-semibold mb-2">Solução:</p>
+              <ul class="space-y-1 text-sm text-gray-300">
+                <li>• Verifique se o usuário e senha estão corretos</li>
+                <li>• Teste a conexão manualmente com PuTTY primeiro</li>
+                <li>• Verifique se o servidor permite autenticação por senha</li>
+                <li>• Certifique-se que não há espaços extras na senha</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- Problema 3 -->
+        <details class="bg-red-900/20 border border-red-500/30 rounded-lg">
+          <summary class="cursor-pointer p-4 text-red-300 font-medium hover:text-red-200 transition-colors flex items-center gap-2">
+            <span>🚫</span> Permission denied
+          </summary>
+          <div class="px-4 pb-4 space-y-3">
+            <div class="bg-slate-900/50 rounded p-3">
+              <p class="text-red-300 font-semibold mb-2">Erro:</p>
+              <code class="text-sm text-gray-300">Permission denied ao fazer upload</code>
+            </div>
+            <div class="bg-green-900/20 border border-green-500/30 rounded p-3">
+              <p class="text-green-300 font-semibold mb-2">Solução:</p>
+              <p class="text-gray-300 text-sm mb-2">No servidor, ajuste as permissões da pasta:</p>
+              <pre class="bg-black/40 p-3 rounded text-xs">chmod 755 /var/www/adv.precifex.com/</pre>
+              <p class="text-gray-400 text-xs mt-2">Ou verifique se o usuário tem permissão de escrita na pasta de destino</p>
+            </div>
+          </div>
+        </details>
+
+        <!-- Problema 4 -->
+        <details class="bg-red-900/20 border border-red-500/30 rounded-lg">
+          <summary class="cursor-pointer p-4 text-red-300 font-medium hover:text-red-200 transition-colors flex items-center gap-2">
+            <span>⏱️</span> Timeout na conexão
+          </summary>
+          <div class="px-4 pb-4 space-y-3">
+            <div class="bg-slate-900/50 rounded p-3">
+              <p class="text-red-300 font-semibold mb-2">Erro:</p>
+              <code class="text-sm text-gray-300">Timeout: Conexão demorou muito tempo</code>
+            </div>
+            <div class="bg-green-900/20 border border-green-500/30 rounded p-3">
+              <p class="text-green-300 font-semibold mb-2">Solução:</p>
+              <ul class="space-y-1 text-sm text-gray-300">
+                <li>• Verifique sua conexão com a internet</li>
+                <li>• Verifique se o servidor está acessível</li>
+                <li>• Tente fazer ping: <code class="bg-slate-800 px-2 py-1 rounded text-xs">ping 77.37.126.7</code></li>
+                <li>• Verifique firewall/antivírus bloqueando a porta 22</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- Problema 5 -->
+        <details class="bg-red-900/20 border border-red-500/30 rounded-lg">
+          <summary class="cursor-pointer p-4 text-red-300 font-medium hover:text-red-200 transition-colors flex items-center gap-2">
+            <span>🗄️</span> Erro ao importar SQL
+          </summary>
+          <div class="px-4 pb-4 space-y-3">
+            <div class="bg-slate-900/50 rounded p-3">
+              <p class="text-red-300 font-semibold mb-2">Erro:</p>
+              <code class="text-sm text-gray-300">ERROR 1045 (28000): Access denied for user</code>
+            </div>
+            <div class="bg-green-900/20 border border-green-500/30 rounded p-3">
+              <p class="text-green-300 font-semibold mb-2">Solução:</p>
+              <p class="text-gray-300 text-sm mb-2">O usuário precisa ter permissões no banco. Execute no MySQL:</p>
+              <pre class="bg-black/40 p-3 rounded text-xs overflow-x-auto">GRANT ALL PRIVILEGES ON adv.* TO 'srodrigo'@'localhost' IDENTIFIED BY 'senha';
+FLUSH PRIVILEGES;</pre>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Temas -->
+    <section class="bg-slate-800 rounded-xl shadow-2xl border border-violet-500/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-violet-600/20 to-fuchsia-600/20 px-6 py-4 border-b border-violet-500/30">
+        <h2 class="text-2xl font-bold text-violet-300 flex items-center gap-3">
+          <span>🎨</span> Temas Disponíveis
+        </h2>
+      </div>
+      
+      <div class="p-6">
+        <p class="text-gray-300 mb-4">Você pode alterar o tema da interface editando o arquivo <code class="bg-slate-700 px-2 py-1 rounded text-violet-200">main.py</code>:</p>
+        
+        <pre class="code-block text-sm mb-4"><code class="text-violet-200">root = ttk.Window(themename="darkly")  <span class="text-gray-400"># Tema atual (dark)</span></code></pre>
+
+        <div class="grid md:grid-cols-2 gap-3">
+          <div class="bg-slate-700 p-3 rounded border-l-4 border-slate-400">
+            <strong class="text-slate-200">darkly</strong>
+            <span class="text-gray-400 text-sm ml-2">Dark theme (atual)</span>
+          </div>
+          <div class="bg-blue-900/30 p-3 rounded border-l-4 border-blue-400">
+            <strong class="text-blue-200">cyborg</strong>
+            <span class="text-gray-400 text-sm ml-2">Dark blue</span>
+          </div>
+          <div class="bg-purple-900/30 p-3 rounded border-l-4 border-purple-400">
+            <strong class="text-purple-200">vapor</strong>
+            <span class="text-gray-400 text-sm ml-2">Purple dark</span>
+          </div>
+          <div class="bg-yellow-900/30 p-3 rounded border-l-4 border-yellow-400">
+            <strong class="text-yellow-200">solar</strong>
+            <span class="text-gray-400 text-sm ml-2">Light theme</span>
+          </div>
+          <div class="bg-gray-200 p-3 rounded border-l-4 border-blue-600">
+            <strong class="text-gray-800">flatly</strong>
+            <span class="text-gray-600 text-sm ml-2">Modern light</span>
+          </div>
+          <div class="bg-gray-100 p-3 rounded border-l-4 border-gray-600">
+            <strong class="text-gray-800">cosmo</strong>
+            <span class="text-gray-600 text-sm ml-2">Clean light</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dicas de Uso -->
+    <section class="bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-2 border-green-500/50 rounded-xl p-6 shadow-xl">
+      <div class="flex items-start gap-4">
+        <div class="text-5xl">💡</div>
+        <div class="flex-1">
+          <h2 class="text-2xl font-bold text-green-300 mb-3">Dicas de Uso</h2>
+          <div class="space-y-3 text-gray-300">
+            <div class="flex items-start gap-2">
+              <span class="text-green-400 font-bold">•</span>
+              <p><strong class="text-green-200">Primeira vez:</strong> Configure tudo e salve a configuração para poupar tempo depois</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-green-400 font-bold">•</span>
+              <p><strong class="text-green-200">Teste antes:</strong> Faça uma conexão manual com PuTTY antes de usar o wizard</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-green-400 font-bold">•</span>
+              <p><strong class="text-green-200">Verifique logs:</strong> Em caso de erro, consulte os logs na pasta <code class="bg-slate-800 px-2 py-1 rounded text-xs">logs/</code></p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-green-400 font-bold">•</span>
+              <p><strong class="text-green-200">Backup:</strong> Sempre faça backup do servidor antes de fazer deploy em produção</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-green-400 font-bold">•</span>
+              <p><strong class="text-green-200">Debug PSCP:</strong> Execute <code class="bg-slate-800 px-2 py-1 rounded text-xs">pscp --version</code> no CMD para verificar se está instalado</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tecnologias -->
+    <section class="bg-slate-800 rounded-xl shadow-2xl border border-cyan-500/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-cyan-600/20 to-blue-600/20 px-6 py-4 border-b border-cyan-500/30">
+        <h2 class="text-2xl font-bold text-cyan-300 flex items-center gap-3">
+          <span>🔧</span> Tecnologias Utilizadas
+        </h2>
+      </div>
+      
+      <div class="p-6 grid md:grid-cols-2 gap-4">
+        <div class="bg-cyan-900/20 border border-cyan-500/30 rounded-lg p-4">
+          <h4 class="text-cyan-300 font-semibold mb-3">🐍 Python</h4>
+          <ul class="space-y-2 text-sm text-gray-300">
+            <li>• <strong>Python 3.8+</strong> - Linguagem base</li>
+            <li>• <strong>ttkbootstrap</strong> - Interface moderna</li>
+            <li>• <strong>Paramiko</strong> - Cliente SSH/SFTP</li>
+            <li>• <strong>Pillow</strong> - Manipulação de imagens</li>
+          </ul>
+        </div>
+        <div class="bg-cyan-900/20 border border-cyan-500/30 rounded-lg p-4">
+          <h4 class="text-cyan-300 font-semibold mb-3">🛠️ Ferramentas</h4>
+          <ul class="space-y-2 text-sm text-gray-300">
+            <li>• <strong>PSCP</strong> - Upload rápido via SSH</li>
+            <li>• <strong>PuTTY</strong> - Terminal SSH</li>
+            <li>• <strong>MySQL</strong> - Import de banco de dados</li>
+            <li>• <strong>Tkinter</strong> - GUI nativa Python</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-12 pb-8 text-center">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="bg-slate-800/50 rounded-lg border border-violet-500/20 p-6">
+        <p class="text-violet-300 text-lg font-semibold">🚀 Deploy Wizard v1.0</p>
+        <p class="text-gray-400 text-sm mt-2">Desenvolvido para automatizar deploys do projeto Juridico PHP</p>
+        <p class="text-gray-500 text-xs mt-3">Janeiro 2026 • Manual do Usuário</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Copy functionality
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-target')
+        const el = document.getElementById(id)
+        if (!el) return
+        
+        const text = el.innerText.replace(/\u00A0/g, ' ')
+        
+        try {
+          await navigator.clipboard.writeText(text.trim())
+          const originalText = btn.innerHTML
+          btn.innerHTML = '✅ Copiado!'
+          btn.classList.add('scale-95')
+          
+          setTimeout(() => {
+            btn.innerHTML = originalText
+            btn.classList.remove('scale-95')
+          }, 2000)
+        } catch(e) {
+          alert('❌ Erro ao copiar. Selecione e copie manualmente.')
+        }
+      })
+    })
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault()
+        const target = document.querySelector(this.getAttribute('href'))
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          })
+        }
+      })
+    })
+  </script>
+</body>
+</html>
