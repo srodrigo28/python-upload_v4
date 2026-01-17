@@ -13,7 +13,7 @@ from config_manager import ConfigManager
 class DeployWizard:
     def __init__(self, root):
         self.root = root
-        self.root.title("Deploy Wizard - Juridico PHP")
+        self.root.title("Deploy V-4")
         # reduzir altura inicial para evitar corte em telas baixas
         self.root.geometry("700x720")
         # permitir redimensionamento
@@ -108,7 +108,7 @@ class DeployWizard:
         self.header.pack(fill="x", padx=0, pady=0)
 
         # cabeçalho simples sem imagem/título grande
-        self.subtitle_label = ctk.CTkLabel(self.header, text="3 passos: Upload → Verificação → Import SQL", font=("Segoe UI", 12, "bold"))
+        self.subtitle_label = ctk.CTkLabel(self.header, text="4 passos: Conexao e Backup → Upload → Verificação → Import SQL", font=("Segoe UI", 12, "bold"))
         self.subtitle_label.pack(pady=(12, 12))
 
         # Container para páginas (rolável se disponível)
@@ -145,7 +145,7 @@ class DeployWizard:
     def create_page_config(self):
         page = ctk.CTkFrame(self.pages_container)
 
-        ctk.CTkLabel(page, text="⚙️ Configuração do Deploy", font=("Segoe UI", 16, "bold"), text_color="#8B5CF6").pack(pady=(0, 18))
+        ctk.CTkLabel(page, text="⚙️ Backup, Upload e Deploy", font=("Segoe UI", 16, "bold"), text_color="#8B5CF6").pack(pady=(0, 18))
 
         container = ctk.CTkFrame(page)
         container.pack(fill="both", expand=True, padx=20, pady=6)
