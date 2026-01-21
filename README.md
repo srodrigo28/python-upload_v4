@@ -3,8 +3,23 @@ Aplicação desktop para automatizar deploy de projetos PHP via PSCP, SSH e MySQ
 
 ## 📋 Visão Geral
 
+## rodar o projeto
+
 > * .venv\Scripts\python.exe .\main.py
 > * .venv\Scripts\python.exe -m py_compile main.py
+
+### 1. criar venv
+
+```bash
+python -m venv venv
+.\venv\Scripts\activate
+```
+
+### 2. Instale as dependências
+
+```bash
+pip install -r requirements.txt
+```
 
 O **Deploy Wizard** é uma ferramenta visual que simplifica o processo de deploy em 3 passos:
 

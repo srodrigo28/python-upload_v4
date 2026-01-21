@@ -1,0 +1,18 @@
+=== Deploy Log - 2026-01-19 10:30:52 ===
+
+=== Iniciando Import SQL ===
+Timestamp: 2026-01-19 10:30:52
+Database: adv
+SQL File: /var/www/adv.precifex.com/scripts/criar_new_db.sql
+
+✅ Arquivo SQL encontrado
+
+Executando comando:
+mysql --no-defaults -u srodrigo -p*** adv < /var/www/adv.precifex.com/scripts/criar_new_db.sql
+
+=== STDERR ===
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1136 (21S01) at line 307: Column count doesn't match value count at row 1
+
+
+❌ Import falhou com erros

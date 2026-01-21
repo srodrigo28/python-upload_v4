@@ -1,0 +1,23 @@
+=== Deploy Log - 2026-01-20 12:54:37 ===
+
+=== Iniciando Import SQL ===
+Timestamp: 2026-01-20 12:54:34
+Database: adv
+SQL File: /var/www/adv.precifex.com/scripts/criar_new_db.sql
+
+✅ Arquivo SQL encontrado
+
+Executando comando:
+mysql --no-defaults -u srodrigo -p*** adv < /var/www/adv.precifex.com/scripts/criar_new_db.sql
+
+=== STDOUT ===
+1
+1
+
+
+=== STDERR ===
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1054 (42S22) at line 561: Unknown column 'oab' in 'field list'
+
+
+❌ Import falhou com erros
